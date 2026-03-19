@@ -10,6 +10,8 @@ from datetime import datetime
 from enum import Enum
 import logging
 import json
+import hashlib
+import unicodedata
 
 logging.basicConfig(level=logging.INFO)
 
@@ -52,7 +54,7 @@ class Professor:
 
 @dataclass
 class Class:
-	uda: str
+	subject: str
 	classroom: str
 	professor: Professor
 	schedules: list[Schedule] = field(default_factory=list)
@@ -151,6 +153,23 @@ def format_professor(name):
 
 	return Professor(names=names, last_names=last_names, honorific=honorific)
 
+def normalize(txt):
+	txt = txt.strip().lower()
+	txt = unicodedata.normalize('NFKD', txt)
+	txt = "".join(c for c in txt if not unicodedata.combining(c))
+	return txt
+
+def generate_hash(txt):
+	txt = normalize(txt)
+	return hashlib.sha256(txt.encode('utf-8')).hexdigest()
+
+def subject_id(course_name, subject):
+	base = f"{course_name}|{subject}"
+	return generate_hash(base)
+
+def professor_id(professor):
+	base = f"{professor.honorific}|{professor.names}|{professor.last_names}"
+	return generate_hash(base)
 
 #####################
 # Table parsing
@@ -164,8 +183,8 @@ def parse_table(table):
 	rows = table[1:]
 
 	try:
-		uda_idx = headers.index("UDA")
-		aula_idx = headers.index("AULA")
+		subject_idx = headers.index("UDA")
+		room_idx = headers.index("AULA")
 		prof_idx = headers.index("PROFESOR")
 	except ValueError:
 		return []
@@ -175,21 +194,21 @@ def parse_table(table):
 	grouped = {}
 
 	for row in rows:
-		uda = clean(row[uda_idx])
-		aula = clean(row[aula_idx])
+		subject = clean(row[subject_idx])
+		room = clean(row[room_idx])
 		prof_raw = clean(row[prof_idx])
 
-		if not uda or not aula:
+		if not subject or not room:
 			continue
 
 		prof = format_professor(prof_raw)
 
-		key = (uda, aula, prof_raw)
+		key = (subject, room, prof_raw)
 
 		if key not in grouped:
 			grouped[key] = Class(
-				uda=uda,
-				classroom=aula,
+				subject=subject,
+				classroom=room,
 				professor=prof,
 				schedules=[]
 			)
@@ -239,26 +258,40 @@ def parse_pdf(url, name):
 
 
 #####################
-# Flatten (JSON OPTIMIZADO)
+# Structured Data
 #####################
 
-def to_flat(courses):
-	rows = []
+def to_structured(courses):
+	subjects = {}
+	professors = {}
+	classes = []
 
 	for course in courses:
 		for cls in course.classes:
+			mid = subject_id(course.name, cls.subject)
+			pid = professor_id(cls.professor)
+
+			subjects[mid] = {"name": course.name, "subjects": cls.subject}
+			professors[pid] = {
+				"name": f"{cls.professor.names} {cls.professor.last_names}",
+				"honorific": cls.professor.honorific
+			}
+
 			for sched in cls.schedules:
-				rows.append({
-					"course": course.name,
-					"uda": cls.uda,
+				classes.append({
+					"subject_id": mid,
+					"professor_id": pid,
 					"classroom": cls.classroom,
 					"day": sched.day.value,
 					"start": sched.timeRange.from_.strftime("%H:%M"),
-					"end": sched.timeRange.to.strftime("%H:%M"),
-					"professor": f"{cls.professor.honorific} {cls.professor.names} {cls.professor.last_names}".strip()
+					"end": sched.timeRange.to.strftime("%H:%M")
 				})
 
-	return rows
+	return {
+		"subjects": subjects,
+		"professors": professors,
+		"classes": classes
+	}
 
 
 #####################
@@ -283,7 +316,7 @@ if __name__ == "__main__":
 	data = run()
 	print(f"Parsed {len(data)} courses")
 
-	flat = to_flat(data)
+	structured = to_structured(data)
 
-	with open(os.path.join(current_dir, "..", "frontend", "src", "data.json"), "w") as f:
-		json.dump(flat, f, separators=(",", ":"))
+	with open(os.path.join(current_dir, "..", "frontend", "src", "data.json"), "w", encoding="utf-8") as f:
+		json.dump(structured, f, indent=2, ensure_ascii=False)
