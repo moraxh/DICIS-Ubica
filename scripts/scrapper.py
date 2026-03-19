@@ -285,5 +285,5 @@ if __name__ == "__main__":
 
 	flat = to_flat(data)
 
-	with open(os.path.join(current_dir, "..", "frontend", "data.json"), "w") as f:
+	with open(os.path.join(current_dir, "..", "frontend", "src", "data.json"), "w") as f:
 		json.dump(flat, f, separators=(",", ":"))
