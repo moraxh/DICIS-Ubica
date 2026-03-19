@@ -9,6 +9,12 @@ export default function Header() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    console.info(
+      "%cWhat are you looking for? 👀\n%cThe code is open source anyway:\nhttps://github.com/moraxh",
+      "color: #10b981; font-size: 20px; font-weight: bold; font-family: monospace;",
+      "color: #a1a1aa; font-size: 14px; font-family: sans-serif;",
+    );
+
     setCurrentTime(new Date());
     const interval = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(interval);
