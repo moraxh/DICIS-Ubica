@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import type { Professor } from "@/backend/models/professor.model";
 import type { Room } from "@/backend/models/room.model";
+import { useProfessors } from "@/context/Professor/useProfessors";
+import { useRooms } from "@/context/Rooms/useRooms";
 import { useFavorites } from "./useFavorites";
 
 interface FavoriteData {
@@ -11,68 +13,39 @@ interface FavoriteData {
 
 export function useFavoritesData(): FavoriteData {
   const { favorites } = useFavorites();
-  const [favoritesData, setFavoritesData] = useState<FavoriteData>({
-    rooms: [],
-    professors: [],
-    isLoading: true,
-  });
+  const { roomsWithState, isLoading: roomsLoading } = useRooms();
+  const { professorsWithState, isLoading: profsLoading } = useProfessors();
 
-  useEffect(() => {
-    const fetchFavoriteDetails = async () => {
-      try {
-        setFavoritesData((prev) => ({ ...prev, isLoading: true }));
+  const favoritesData = useMemo(() => {
+    // Collect all rooms
+    const allRooms = [
+      ...roomsWithState.freeRooms.map((r) => r.room),
+      ...roomsWithState.occupiedRooms.map((r) => r.room),
+    ];
 
-        // Get all rooms
-        const roomsResponse = await fetch("/api/v1/rooms");
-        const roomsData = roomsResponse.ok ? await roomsResponse.json() : null;
+    // Collect all professors
+    const allProfessors = [
+      ...professorsWithState.freeProfessors.map((p) => p.professor),
+      ...professorsWithState.occupiedProfessors.map((p) => p.professor),
+    ];
 
-        // Get all professors
-        const professorsResponse = await fetch("/api/v1/professors");
-        const professorsData = professorsResponse.ok
-          ? await professorsResponse.json()
-          : null;
+    const favoriteRooms = allRooms.filter((room) => favorites.has(room.id));
+    const favoriteProfessors = allProfessors.filter((prof) =>
+      favorites.has(prof.id),
+    );
 
-        // Filter favorites
-        const allRooms = roomsData
-          ? [
-              ...roomsData.freeRooms.map((r: { room: Room }) => r.room),
-              ...roomsData.occupiedRooms.map((r: { room: Room }) => r.room),
-            ]
-          : [];
-
-        const allProfessors = professorsData
-          ? [
-              ...professorsData.freeProfessors.map(
-                (p: { professor: Professor }) => p.professor,
-              ),
-              ...professorsData.occupiedProfessors.map(
-                (p: { professor: Professor }) => p.professor,
-              ),
-            ]
-          : [];
-
-        const favoriteRooms = allRooms.filter((room) => favorites.has(room.id));
-        const favoriteProfessors = allProfessors.filter((prof) =>
-          favorites.has(prof.id),
-        );
-
-        setFavoritesData({
-          rooms: favoriteRooms,
-          professors: favoriteProfessors,
-          isLoading: false,
-        });
-      } catch (error) {
-        console.error("Error fetching favorite details:", error);
-        setFavoritesData({
-          rooms: [],
-          professors: [],
-          isLoading: false,
-        });
-      }
+    return {
+      rooms: favoriteRooms,
+      professors: favoriteProfessors,
+      isLoading: roomsLoading || profsLoading,
     };
-
-    fetchFavoriteDetails();
-  }, [Array.from(favorites).sort().join(",")]);
+  }, [
+    favorites,
+    roomsWithState,
+    professorsWithState,
+    roomsLoading,
+    profsLoading,
+  ]);
 
   return favoritesData;
 }
