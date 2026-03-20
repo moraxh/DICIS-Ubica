@@ -16,10 +16,13 @@ export default function ProfessorsSection() {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { openScheduleModal } = useScheduleModal();
 
-  const allProfessors = [
-    ...professorsWithState.freeProfessors,
-    ...professorsWithState.occupiedProfessors,
-  ];
+  const occupiedProfessors = [...professorsWithState.occupiedProfessors].sort(
+    (a, b) => {
+      if (a.occupiedUntilEnd && !b.occupiedUntilEnd) return 1;
+      if (!a.occupiedUntilEnd && b.occupiedUntilEnd) return -1;
+      return (a.timeUntilFree || 0) - (b.timeUntilFree || 0);
+    },
+  );
 
   const [isOutsideHours, setIsOutsideHours] = useState(false);
 
@@ -32,10 +35,10 @@ export default function ProfessorsSection() {
       <motion.section layout className="space-y-4">
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 pb-4">
           <h2 className="text-lg font-medium text-zinc-900 dark:text-white">
-            Profesores
+            Profesores ocupados
           </h2>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3 min-h-[72px]">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
@@ -47,15 +50,15 @@ export default function ProfessorsSection() {
     );
   }
 
-  if (allProfessors.length === 0) {
+  if (occupiedProfessors.length === 0) {
     return (
       <motion.section layout className="space-y-4">
         <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 pb-4">
           <h2 className="text-lg font-medium text-zinc-900 dark:text-white">
-            Profesores
+            Profesores ocupados
           </h2>
         </div>
-        <EmptyState message="No hay profesores disponibles en este momento" />
+        <EmptyState message="No hay profesores ocupados en este momento" />
       </motion.section>
     );
   }
@@ -64,11 +67,11 @@ export default function ProfessorsSection() {
     <motion.section layout className="space-y-4">
       <div className="flex items-center justify-between border-b border-zinc-200 dark:border-white/10 pb-4">
         <h2 className="text-lg font-medium text-zinc-900 dark:text-white">
-          Profesores
+          Profesores ocupados
         </h2>
       </div>
-      <div className="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-custom">
-        {allProfessors.map((profInfo, i) => {
+      <div className="space-y-3 max-h-64 overflow-y-auto pr-2 scroll-custom min-h-[72px]">
+        {occupiedProfessors.map((profInfo, i) => {
           const isInClass = profInfo.currentOccupancy !== null;
 
           return (
@@ -103,8 +106,11 @@ export default function ProfessorsSection() {
                       <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         <span>
-                          Se libera{" "}
-                          {formatTimeRemaining(profInfo.timeUntilFree || 0)}
+                          {profInfo.occupiedUntilEnd
+                            ? "Ocupado por el resto del día"
+                            : `Se libera ${formatTimeRemaining(
+                                profInfo.timeUntilFree || 0,
+                              )}`}
                         </span>
                       </div>
                     ) : profInfo.timeUntilOccupancy !== null ? (

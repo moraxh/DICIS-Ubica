@@ -31,7 +31,7 @@ export default function AvailableRoomsSection() {
             Salones disponibles ahora
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-h-[104px]">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
@@ -70,7 +70,7 @@ export default function AvailableRoomsSection() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-160 overflow-y-auto pr-2 scroll-custom">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-160 overflow-y-auto pr-2 scroll-custom min-h-[104px]">
         {availableRooms.map((roomInfo, i) => (
           <GlowCard
             onClick={() =>

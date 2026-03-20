@@ -176,8 +176,11 @@ export default function ProfessorsPage() {
                           En clase
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                          Se libera{" "}
-                          {formatTimeRemaining(profInfo.timeUntilFree || 0)}
+                          {profInfo.occupiedUntilEnd
+                            ? "Ocupado por el resto del día"
+                            : `Se libera ${formatTimeRemaining(
+                                profInfo.timeUntilFree || 0,
+                              )}`}
                         </span>
                       </>
                     ) : (

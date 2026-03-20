@@ -1,7 +1,13 @@
 import { type ClassWithDetails, DaysOfWeek } from "./types";
 
+export function getMexicoCityDate(date: Date = new Date()): Date {
+  return new Date(
+    date.toLocaleString("en-US", { timeZone: "America/Mexico_City" }),
+  );
+}
+
 export function secondsUntilNextHalfHour(): number {
-  const now = new Date();
+  const now = getMexicoCityDate();
   const minutes = now.getMinutes();
   const seconds = now.getSeconds();
   let secondsUntilNextHalfHour: number;
@@ -36,8 +42,9 @@ export function timeToMinutes(time: string): number {
 }
 
 export function getCurrentMinutes(date: Date = new Date()): number {
+  const mxDate = getMexicoCityDate(date);
   return timeToMinutes(
-    `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`,
+    `${mxDate.getHours()}:${String(mxDate.getMinutes()).padStart(2, "0")}`,
   );
 }
 
@@ -52,19 +59,19 @@ export function isClassNow(
 }
 
 export function isOutsideSchoolHours(): boolean {
-  const now = new Date();
+  const now = getMexicoCityDate();
   const hours = now.getHours();
   const day = now.getDay();
 
   if (day === 0) return true;
 
-  if (hours < 7 || hours >= 22) return true;
+  if (hours < 8 || hours >= 18) return true;
 
   return false;
 }
 
 export function getTodayOfWeek(): (typeof DaysOfWeek)[number] {
-  const todayName = new Date()
+  const todayName = getMexicoCityDate()
     .toLocaleDateString("en-US", { weekday: "long" })
     .toUpperCase();
 

@@ -8,11 +8,16 @@ export function GET() {
 
     const cacheSeconds = secondsUntilNextHalfHour();
 
-    return NextResponse.json(response, {
-      headers: {
-        "Cache-Control": `public, max-age=${cacheSeconds}, s-maxage=${cacheSeconds}, stale-while-revalidate=60`,
-      },
-    });
+    const headers =
+      process.env.NODE_ENV === "development"
+        ? {
+            "Cache-Control": "no-store, max-age=0",
+          }
+        : {
+            "Cache-Control": `public, max-age=${cacheSeconds}, s-maxage=${cacheSeconds}, stale-while-revalidate=60`,
+          };
+
+    return NextResponse.json(response, { headers });
   } catch (error) {
     console.error("Error fetching rooms state:", error);
     return NextResponse.json(

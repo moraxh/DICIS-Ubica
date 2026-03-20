@@ -15,7 +15,11 @@ export default function OccupiedRoomsSection() {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { openScheduleModal } = useScheduleModal();
 
-  const occupiedRooms = roomsWithState.occupiedRooms;
+  const occupiedRooms = [...roomsWithState.occupiedRooms].sort((a, b) => {
+    if (a.occupiedUntilEnd && !b.occupiedUntilEnd) return 1;
+    if (!a.occupiedUntilEnd && b.occupiedUntilEnd) return -1;
+    return (a.timeUntilFree || 0) - (b.timeUntilFree || 0);
+  });
 
   if (isLoading) {
     return (
@@ -25,7 +29,7 @@ export default function OccupiedRoomsSection() {
             Salones ocupados
           </h2>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-3 min-h-[88px]">
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
@@ -57,7 +61,7 @@ export default function OccupiedRoomsSection() {
           Salones ocupados
         </h2>
       </div>
-      <div className="space-y-3 max-h-96 overflow-y-auto pr-2 scroll-custom">
+      <div className="space-y-3 max-h-96 overflow-y-auto pr-2 scroll-custom min-h-[88px]">
         {occupiedRooms.map((roomInfo) => (
           <GlowCard
             onClick={() =>
@@ -93,7 +97,12 @@ export default function OccupiedRoomsSection() {
                   <div className="truncate">
                     {roomInfo.currentOccupancy?.subject.subject}
                   </div>
-                  {roomInfo.timeUntilFree !== null && (
+                  {roomInfo.occupiedUntilEnd ? (
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <Clock className="w-3 h-3" />
+                      <span>Ocupado por el resto del día</span>
+                    </div>
+                  ) : roomInfo.timeUntilFree !== null ? (
                     <div className="flex items-center gap-1.5 text-xs">
                       <Clock className="w-3 h-3" />
                       <span>
@@ -101,7 +110,7 @@ export default function OccupiedRoomsSection() {
                         {formatTimeRemaining(roomInfo.timeUntilFree)}
                       </span>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>

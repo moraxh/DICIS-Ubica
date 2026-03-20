@@ -39,6 +39,7 @@ export interface RoomWithOccupancyInfo {
   nextOccupancy: ClassWithDetails | null;
   timeUntilOccupancy: number | null; // minutes
   timeUntilFree: number | null; // minutes
+  occupiedUntilEnd?: boolean;
 }
 
 export interface ProfessorWithOccupancyInfo {
@@ -47,4 +48,5 @@ export interface ProfessorWithOccupancyInfo {
   nextOccupancy: ClassWithDetails | null;
   timeUntilOccupancy: number | null; // minutes
   timeUntilFree: number | null; // minutes
+  occupiedUntilEnd?: boolean;
 }

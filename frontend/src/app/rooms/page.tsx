@@ -167,8 +167,11 @@ export default function RoomsPage() {
                           Ocupado
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                          Se libera{" "}
-                          {formatTimeRemaining(roomInfo.timeUntilFree || 0)}
+                          {roomInfo.occupiedUntilEnd
+                            ? "Ocupado por el resto del día"
+                            : `Se libera ${formatTimeRemaining(
+                                roomInfo.timeUntilFree || 0,
+                              )}`}
                         </span>
                       </>
                     ) : (

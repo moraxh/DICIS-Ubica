@@ -16,7 +16,14 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(response);
+    const headers: Record<string, string> =
+      process.env.NODE_ENV === "development"
+        ? {
+            "Cache-Control": "no-store, max-age=0",
+          }
+        : {};
+
+    return NextResponse.json(response, { headers });
   } catch (error) {
     console.error("Error fetching professor schedule:", error);
     return NextResponse.json(

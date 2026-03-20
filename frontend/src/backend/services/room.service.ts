@@ -42,9 +42,9 @@ export class RoomService {
     // Enrich rooms with occupancy information
     const enrichedRooms = allRooms.map((room) => {
       const currentOccupancy = currentClassesByRoom.get(room.id) || null;
-      const roomClasses = hydratedClasses.filter(
-        (cls) => cls.room.id === room.id,
-      );
+      const roomClasses = hydratedClasses
+        .filter((cls) => cls.room.id === room.id)
+        .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
       // Get next occupancy (next class after current time)
       const nextOccupancy =
@@ -56,10 +56,32 @@ export class RoomService {
       // Calculate time until occupation or freedom
       let timeUntilOccupancy: number | null = null;
       let timeUntilFree: number | null = null;
+      let occupiedUntilEnd = false;
 
       if (currentOccupancy) {
         // Room is occupied - calculate when it becomes free
-        timeUntilFree = minutesUntilTime(currentOccupancy.end);
+        let actualEndClass = currentOccupancy;
+        let keepChecking = true;
+
+        while (keepChecking) {
+          const nextConsecutiveClass = roomClasses.find(
+            (cls) =>
+              timeToMinutes(cls.start) === timeToMinutes(actualEndClass.end),
+          );
+
+          if (nextConsecutiveClass) {
+            actualEndClass = nextConsecutiveClass;
+          } else {
+            keepChecking = false;
+          }
+        }
+
+        timeUntilFree = minutesUntilTime(actualEndClass.end);
+
+        // Check if the current block of classes ends at or after 6 PM (18:00)
+        if (timeToMinutes(actualEndClass.end) >= timeToMinutes("18:00")) {
+          occupiedUntilEnd = true;
+        }
       } else if (nextOccupancy) {
         // Room is free - calculate when it becomes occupied
         timeUntilOccupancy = minutesUntilTime(nextOccupancy.start);
@@ -71,6 +93,7 @@ export class RoomService {
         nextOccupancy,
         timeUntilOccupancy,
         timeUntilFree,
+        occupiedUntilEnd,
       } as RoomWithOccupancyInfo;
     });
 

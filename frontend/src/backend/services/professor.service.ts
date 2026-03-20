@@ -46,9 +46,9 @@ export class ProfessorService {
     const enrichedProfessors = allProfessors.map((professor) => {
       const currentOccupancy =
         currentClassesByProfessor.get(professor.id) || null;
-      const professorClasses = hydratedClasses.filter(
-        (cls) => cls.professor.id === professor.id,
-      );
+      const professorClasses = hydratedClasses
+        .filter((cls) => cls.professor.id === professor.id)
+        .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
 
       // Get next occupancy (next class after current time)
       const nextOccupancy =
@@ -60,10 +60,32 @@ export class ProfessorService {
       // Calculate time until occupation or freedom
       let timeUntilOccupancy: number | null = null;
       let timeUntilFree: number | null = null;
+      let occupiedUntilEnd = false;
 
       if (currentOccupancy) {
         // Professor is occupied - calculate when they become free
-        timeUntilFree = minutesUntilTime(currentOccupancy.end);
+        let actualEndClass = currentOccupancy;
+        let keepChecking = true;
+
+        while (keepChecking) {
+          const nextConsecutiveClass = professorClasses.find(
+            (cls) =>
+              timeToMinutes(cls.start) === timeToMinutes(actualEndClass.end),
+          );
+
+          if (nextConsecutiveClass) {
+            actualEndClass = nextConsecutiveClass;
+          } else {
+            keepChecking = false;
+          }
+        }
+
+        timeUntilFree = minutesUntilTime(actualEndClass.end);
+
+        // Check if the current block of classes ends at or after 6 PM (18:00)
+        if (timeToMinutes(actualEndClass.end) >= timeToMinutes("18:00")) {
+          occupiedUntilEnd = true;
+        }
       } else if (nextOccupancy) {
         // Professor is free - calculate when they become occupied
         timeUntilOccupancy = minutesUntilTime(nextOccupancy.start);
@@ -75,6 +97,7 @@ export class ProfessorService {
         nextOccupancy,
         timeUntilOccupancy,
         timeUntilFree,
+        occupiedUntilEnd,
       } as ProfessorWithOccupancyInfo;
     });
 
