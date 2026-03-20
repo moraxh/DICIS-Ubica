@@ -177,10 +177,9 @@ export default function RoomsPage() {
                           Disponible
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                          Próxima clase{" "}
                           {roomInfo.timeUntilOccupancy !== null
-                            ? formatTimeRemaining(roomInfo.timeUntilOccupancy)
-                            : "N/A"}
+                            ? `Próxima clase ${formatTimeRemaining(roomInfo.timeUntilOccupancy)}`
+                            : "Libre el resto del día"}
                         </span>
                       </>
                     )}

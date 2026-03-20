@@ -186,10 +186,9 @@ export default function ProfessorsPage() {
                           Disponible
                         </span>
                         <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                          Próxima clase{" "}
                           {profInfo.timeUntilOccupancy !== null
-                            ? formatTimeRemaining(profInfo.timeUntilOccupancy)
-                            : "N/A"}
+                            ? `Próxima clase ${formatTimeRemaining(profInfo.timeUntilOccupancy)}`
+                            : "Libre el resto del día"}
                         </span>
                       </>
                     )}

@@ -17,7 +17,30 @@ const interSans = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "DICIS Tracker",
+  description: "Esta herramienta te ayuda a encontrar salones vacíos o saber si un profesor está disponible en tiempo real.",
+  openGraph: {
+    title: "DICIS Tracker",
+    description: "Encuentra salones vacíos y profesores disponibles en tiempo real.",
+    siteName: "DICIS Tracker",
+    images: [
+      {
+        url: "/showcase.png",
+        width: 1200,
+        height: 630,
+        alt: "DICIS Tracker Preview",
+      },
+    ],
+    locale: "es_MX",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DICIS Tracker",
+    description: "Encuentra salones vacíos y profesores disponibles en tiempo real.",
+    images: ["/showcase.png"],
+  },
 };
 
 export default function RootLayout({

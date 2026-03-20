@@ -115,7 +115,12 @@ export default function ProfessorsSection() {
                           {formatTimeRemaining(profInfo.timeUntilOccupancy)}
                         </span>
                       </div>
-                    ) : null}
+                    ) : (
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        <span>Libre el resto del día</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">

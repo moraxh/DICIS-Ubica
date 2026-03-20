@@ -121,7 +121,7 @@ export default function AvailableRoomsSection() {
                     ? "Escuela cerrada"
                     : roomInfo.timeUntilOccupancy !== null
                       ? formatTimeRemaining(roomInfo.timeUntilOccupancy)
-                      : "Libre todo el día"}
+                      : "Libre el resto del día"}
                 </span>
               </div>
             </div>
