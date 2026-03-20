@@ -171,6 +171,9 @@ def professor_id(professor):
 	base = f"{professor.honorific}|{professor.names}|{professor.last_names}"
 	return generate_hash(base)
 
+def room_id(room):
+	return generate_hash(room)
+
 #####################
 # Table parsing
 #####################
@@ -261,38 +264,90 @@ def parse_pdf(url, name):
 # Structured Data
 #####################
 
+filtered_rooms_names = {
+	"Biblioteca",
+	"Virtual",
+	"Teams",
+	"Canchas",
+}
+
+def is_valid_room(name):
+	if not name:
+		return False
+
+	name = name.lower().strip()
+
+	if len(name) < 2:
+		return False
+
+	for fr in filtered_rooms_names:
+		if fr.lower() in name:
+			return False
+
+	return True
+
 def to_structured(courses):
 	subjects = {}
 	professors = {}
+	rooms = {}
 	classes = []
 
 	for course in courses:
 		for cls in course.classes:
+			if not is_valid_room(cls.classroom):
+				continue
+
 			mid = subject_id(course.name, cls.subject)
 			pid = professor_id(cls.professor)
+			cid = room_id(cls.classroom)
 
-			subjects[mid] = {"name": course.name, "subjects": cls.subject}
+			subjects[mid] = {"course_name": course.name, "subject": cls.subject}
 			professors[pid] = {
 				"name": f"{cls.professor.names} {cls.professor.last_names}",
 				"honorific": cls.professor.honorific
 			}
+			rooms[cid] = {"name": cls.classroom}
 
 			for sched in cls.schedules:
 				classes.append({
-					"subject_id": mid,
-					"professor_id": pid,
-					"classroom": cls.classroom,
+					"subjectId": mid,
+					"professorId": pid,
+					"roomId": cid,
 					"day": sched.day.value,
 					"start": sched.timeRange.from_.strftime("%H:%M"),
 					"end": sched.timeRange.to.strftime("%H:%M")
 				})
 
+	# Conver to object in array
+	subjects_array = []
+	for mid, data in subjects.items():
+		subjects_array.append({
+			"id": mid,
+			"course_name": data["course_name"],
+			"subject": data["subject"]
+		})
+
+	professors_array = []
+	for pid, data in professors.items():
+		professors_array.append({
+			"id": pid,
+			"name": data["name"],
+			"honorific": data["honorific"]
+		})
+
+	rooms_array = []
+	for cid, data in rooms.items():
+		rooms_array.append({
+			"id": cid,
+			"name": data["name"]
+		})
+
 	return {
-		"subjects": subjects,
-		"professors": professors,
+		"subjects": subjects_array,
+		"professors": professors_array,
+		"rooms": rooms_array,
 		"classes": classes
 	}
-
 
 #####################
 # Main
