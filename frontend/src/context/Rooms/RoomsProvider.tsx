@@ -30,6 +30,8 @@ export const RoomsProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Failed to fetch rooms");
       }
       const data: RoomsWithState = await response.json();
+      data.freeRooms.sort((a, b) => a.room.name.localeCompare(b.room.name));
+      data.occupiedRooms.sort((a, b) => a.room.name.localeCompare(b.room.name));
       setRoomsWithState(data);
     } catch (error) {
       console.error("Error fetching rooms:", error);

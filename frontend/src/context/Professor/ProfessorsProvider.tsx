@@ -31,6 +31,12 @@ export const ProfessorsProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Failed to fetch professors");
       }
       const data: ProfessorsWithState = await response.json();
+      data.freeProfessors.sort((a, b) =>
+        a.professor.name.localeCompare(b.professor.name),
+      );
+      data.occupiedProfessors.sort((a, b) =>
+        a.professor.name.localeCompare(b.professor.name),
+      );
       setProfessorsWithState(data);
     } catch (error) {
       console.error("Error fetching professors:", error);
