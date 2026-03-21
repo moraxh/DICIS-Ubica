@@ -55,7 +55,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es-MX"
       className={`${interSans} h-full antialiased`}
       suppressHydrationWarning
     >
