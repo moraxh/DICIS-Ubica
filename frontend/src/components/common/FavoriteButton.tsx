@@ -21,6 +21,8 @@ export default function FavoriteButton({
         e.stopPropagation();
         onClick();
       }}
+      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      title={isFavorite ? "Remove from favorites" : "Add to favorites"}
       className={`rounded-full transition-colors ${
         isFavorite
           ? "text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10"

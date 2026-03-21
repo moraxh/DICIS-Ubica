@@ -22,6 +22,7 @@ export default function NavBar() {
             <Link
               href={tab.route}
               key={tab.route}
+              aria-label={tab.label}
               className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors z-10 ${
                 isActive
                   ? "text-zinc-900 dark:text-white"

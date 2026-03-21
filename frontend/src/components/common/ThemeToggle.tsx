@@ -35,13 +35,15 @@ export default function ThemeToggle() {
       onClick={handleToggle}
       className="p-2.5 rounded-full bg-zinc-200/50 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors"
       disabled={isAnimating}
+      aria-label="Toggle theme"
+      title="Toggle theme"
     >
       <motion.span
         style={{ display: "flex" }}
         animate={{ rotate: isAnimating ? 270 : 0 }}
         transition={{ duration: 0.35, ease: "easeInOut" }}
       >
-        {mounted && getIcon()}
+        {mounted ? getIcon() : <div style={{ width: 18, height: 18 }} />}
       </motion.span>
     </button>
   );

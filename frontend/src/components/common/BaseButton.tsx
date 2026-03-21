@@ -14,6 +14,7 @@ interface BaseButtonProps {
   disabled?: boolean;
   type?: "button" | "submit" | "reset";
   isLoading?: boolean;
+  "aria-label"?: string;
 }
 
 export default function BaseButton({
@@ -27,6 +28,7 @@ export default function BaseButton({
   disabled = false,
   type = "button",
   isLoading = false,
+  "aria-label": ariaLabel,
 }: BaseButtonProps) {
   const baseStyles =
     "inline-flex items-center justify-center gap-2 font-bold transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none uppercase tracking-wider text-[10px]";
@@ -56,6 +58,7 @@ export default function BaseButton({
       type={type}
       onClick={onClick}
       disabled={disabled || isLoading}
+      aria-label={ariaLabel}
       className={`
         ${baseStyles} 
         ${variants[variant]} 

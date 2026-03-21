@@ -34,6 +34,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 title={username}
+                aria-label={`GitHub profile of ${username}`}
                 className="group relative w-10 h-10 rounded-full overflow-hidden border-2 border-transparent hover:border-zinc-400 dark:hover:border-zinc-500 transition-all hover:scale-110 shadow-sm"
               >
                 <Image
@@ -42,7 +43,6 @@ export default function Footer() {
                   fill
                   className="object-cover"
                   sizes="40px"
-                  unoptimized
                 />
               </a>
             ))}

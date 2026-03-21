@@ -261,6 +261,7 @@ export default function ScheduleModal() {
                                         e.stopPropagation();
                                         setSelectedClass(cls);
                                       }}
+                                      aria-label={`${title} by ${subtitle}`}
                                       className={`absolute text-start left-1 right-1 rounded-md p-1.5 px-2 text-xs leading-tight overflow-hidden transition-all duration-200 z-10 flex flex-col group cursor-pointer border shadow-sm ${
                                         hoveredSubjectId === cls.subject.id
                                           ? "bg-blue-100 border-blue-400 dark:bg-blue-500/30 dark:border-blue-400 text-blue-900 dark:text-blue-100 scale-[1.02] z-20 shadow-md"
