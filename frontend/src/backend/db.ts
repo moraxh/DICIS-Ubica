@@ -1,2 +1,2 @@
 import data from "@/data.json";
-export const db = data;
+export const db = data.Salamanca;
