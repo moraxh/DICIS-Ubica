@@ -1,7 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
 import { motion } from "motion/react";
+import type { ReactNode } from "react";
 
 interface LayoutSectionProps {
   children: ReactNode;
@@ -9,10 +9,10 @@ interface LayoutSectionProps {
   delay?: number;
 }
 
-export default function LayoutSection({ 
-  children, 
+export default function LayoutSection({
+  children,
   className = "",
-  delay = 0
+  delay = 0,
 }: LayoutSectionProps) {
   return (
     <motion.section
