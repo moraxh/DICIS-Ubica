@@ -3,12 +3,12 @@
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
 
-const AvailableRoomsSection = dynamic(
-  () => import("@/components/pages/home/AvailableRooms"),
-  { ssr: false },
-);
 const FavoritesSection = dynamic(
   () => import("@/components/pages/home/Favorites"),
+  { ssr: false },
+);
+const AvailableRoomsSection = dynamic(
+  () => import("@/components/pages/home/AvailableRooms"),
   { ssr: false },
 );
 const OccupiedRoomsSection = dynamic(
@@ -29,12 +29,12 @@ export default function Home() {
       transition={{ duration: 0.3 }}
       className="grid grid-cols-1 lg:grid-cols-12 gap-6"
     >
-      <motion.div layout className="lg:col-span-8 space-y-8">
+      <motion.div layout className="space-y-8 lg:col-span-8">
         <FavoritesSection />
         <AvailableRoomsSection />
       </motion.div>
 
-      <motion.div layout className="lg:col-span-4 space-y-6">
+      <motion.div layout className="space-y-6 lg:col-span-4">
         <OccupiedRoomsSection />
         <ProfessorsSection />
       </motion.div>

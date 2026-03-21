@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   ProfessorsWithState,
   ProfessorWithSchedule,
@@ -22,6 +22,12 @@ export const ProfessorsProvider = ({ children }: { children: ReactNode }) => {
     state: "all",
     search: "",
   });
+  const scheduleCacheRef = useRef(
+    new Map<string, ProfessorWithSchedule | null>(),
+  );
+  const pendingScheduleRequestsRef = useRef(
+    new Map<string, Promise<ProfessorWithSchedule | null>>(),
+  );
 
   const refresh = useCallback(async () => {
     try {
@@ -48,18 +54,44 @@ export const ProfessorsProvider = ({ children }: { children: ReactNode }) => {
 
   const getProfessorScheduleById = useCallback(
     async (id: string): Promise<ProfessorWithSchedule | null> => {
-      try {
-        const response = await fetch(`/api/v1/professors/${id}/schedule`);
-        if (!response.ok) {
-          if (response.status === 404) {
-            return null;
+      const cachedSchedule = scheduleCacheRef.current.get(id);
+      if (cachedSchedule !== undefined) {
+        return cachedSchedule;
+      }
+
+      const pendingRequest = pendingScheduleRequestsRef.current.get(id);
+      if (pendingRequest) {
+        return pendingRequest;
+      }
+
+      const request = (async () => {
+        try {
+          const response = await fetch(`/api/v1/professors/${id}/schedule`);
+          if (!response.ok) {
+            if (response.status === 404) {
+              scheduleCacheRef.current.set(id, null);
+              return null;
+            }
+            throw new Error("Failed to fetch professor schedule");
           }
-          throw new Error("Failed to fetch professor schedule");
+
+          const data: ProfessorWithSchedule = await response.json();
+          scheduleCacheRef.current.set(id, data);
+          return data;
+        } catch (error) {
+          console.error(`Error fetching professor schedule for ${id}:`, error);
+          return null;
+        } finally {
+          pendingScheduleRequestsRef.current.delete(id);
         }
-        return await response.json();
-      } catch (error) {
-        console.error(`Error fetching professor schedule for ${id}:`, error);
-        return null;
+      })();
+
+      pendingScheduleRequestsRef.current.set(id, request);
+
+      try {
+        return await request;
+      } finally {
+        pendingScheduleRequestsRef.current.delete(id);
       }
     },
     [],
