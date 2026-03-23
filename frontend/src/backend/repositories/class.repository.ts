@@ -4,9 +4,6 @@ import { Professor } from "@/backend/models/professor.model";
 import { Room } from "@/backend/models/room.model";
 import { Subject } from "@/backend/models/subject.model";
 import type { ClassWithDetails, DaysOfWeek, Result } from "@/backend/types";
-import { ProfessorRepository } from "./professor.repository";
-import { RoomRepository } from "./room.repository";
-import { SubjectRepository } from "./subject.repository";
 
 export class ClassRepository {
   private static getHydratedClassesWithCondition(
