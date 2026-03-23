@@ -19,6 +19,8 @@ filtered_rooms_names = {
 }
 
 
+from room_merger import merge_outlier_rooms
+
 def is_valid_room(name):
   if not name:
     return False
@@ -194,5 +196,11 @@ def scraper_dicis_salamanca(url: str) -> list[Course]:
           courses.append(course)
       except Exception as e:
         logging.warning(f"Failed to parse {a['name']}: {e}")
+
+  dicis_rules = [
+      ("cdmanu", "manufactura"),
+      ("computo", "comp. a")
+  ]
+  courses = merge_outlier_rooms(courses, outlier_threshold=5, custom_rules=dicis_rules)
 
   return courses
