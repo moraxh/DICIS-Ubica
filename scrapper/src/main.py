@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from db import save_to_db
@@ -42,11 +43,15 @@ def run_all_scrapers(output_path):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
+  
+  base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+  default_db_path = os.path.join(base_dir, "frontend", "src", "data.db")
+
   parser.add_argument(
     "--output",
     "-o",
     help="Output sqlite db file path",
-    default="../../frontend/src/data.db",
+    default=default_db_path,
   )
   args = parser.parse_args()
 
