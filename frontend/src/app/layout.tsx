@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
@@ -17,6 +17,10 @@ const interSans = Inter({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#18181b",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
@@ -24,6 +28,7 @@ export const metadata: Metadata = {
   title: "DICIS Tracker",
   description:
     "Esta herramienta te ayuda a encontrar salones vacíos o saber si un profesor está disponible en tiempo real.",
+  manifest: "/manifest.json",
   openGraph: {
     title: "DICIS Tracker",
     description:
