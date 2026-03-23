@@ -7,6 +7,7 @@ import pdfplumber
 import requests
 from bs4 import BeautifulSoup
 
+from room_merger import merge_outlier_rooms
 from utils import clean, safe_parse_time
 
 from .index import Class, Course, Day, Professor, Schedule, TimeRange
@@ -18,8 +19,6 @@ filtered_rooms_names = {
   "Canchas",
 }
 
-
-from room_merger import merge_outlier_rooms
 
 def is_valid_room(name):
   if not name:
