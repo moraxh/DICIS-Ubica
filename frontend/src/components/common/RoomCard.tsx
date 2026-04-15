@@ -74,7 +74,7 @@ const RoomCard = memo(function RoomCard({
               <span className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate font-semibold tracking-tight">
                 {occupiedUntilEnd
                   ? "Resto del día"
-                  : `Libre ${formatTimeRemaining(timeUntilFree || 0)}`}
+                  : `Libre en: ${formatTimeRemaining(timeUntilFree || 0)}`}
               </span>
             </>
           ) : (
@@ -84,7 +84,7 @@ const RoomCard = memo(function RoomCard({
               </span>
               <span className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate font-semibold tracking-tight">
                 {timeUntilOccupancy !== null && timeUntilOccupancy !== undefined
-                  ? `En ${formatTimeRemaining(timeUntilOccupancy)}`
+                  ? `Se ocupa en: ${formatTimeRemaining(timeUntilOccupancy)}`
                   : "Resto del día"}
               </span>
             </>

@@ -57,10 +57,10 @@ export function minutesUntilTime(timeString: string): number {
 export function formatTimeRemaining(minutes: number): string {
   if (minutes < 0) return "Ya pasó";
   if (minutes === 0) return "Ahora";
-  if (minutes < 60) return `en ${minutes}m`;
+  if (minutes < 60) return `${minutes}m`;
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return mins > 0 ? `en ${hours}h ${mins}m` : `en ${hours}h`;
+  return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
 }
 
 export function formatAvailabilityStatus(minutes: number): string {
